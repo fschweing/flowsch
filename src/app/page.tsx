@@ -1,5 +1,9 @@
+"use client";
+
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import Link from "next/link";
 import { pageColors } from "@/lib/colors";
+import { useRef } from "react";
 
 const links: {
 	href: string;
@@ -18,21 +22,31 @@ const links: {
 ];
 
 export default function Home() {
+	const containerRef = useRef(null);
 	return (
-		<main className="relative min-h-screen">
-			{/* Fixed full-page background text */}
+		<main
+			ref={containerRef}
+			className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory"
+		>
+			{/* Hero Text Background */}
 			<section className="fixed top-0 left-0 w-full h-screen flex flex-col items-center justify-center pointer-events-none z-0">
-				<h1 className="max-w max-h font-black uppercase text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl opacity-80 font-sans">
+				<motion.h1 className="max-w max-h font-black uppercase text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl opacity-80 font-sans">
 					Run towards your fears. Be kind to yourself. Water your plants once
 					every two weeks. Measure a group's success by its weakest member. Hug
 					a stranger. If you have to compare yourself, then only to your own
 					past. Ask for help. Read one more book.
-				</h1>
+				</motion.h1>
 			</section>
 
-			{/* Subpage links grid overlays as you scroll */}
-			<section className="relative z-10 flex min-h-screen items-center justify-center mt-[100vh] px-12">
-				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 w-full max-w-10howxl">
+			{/* Empty spacer to allow scroll and snapping */}
+			<section className="snap-start h-screen w-full" />
+
+			{/* Overlay Cards Section */}
+			<section className="snap-start h-screen w-full relative z-10 flex items-center justify-center px-12">
+				<motion.div
+					whileInView={{ opacity: 1, y: 0 }}
+					className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 w-full max-w-6xl"
+				>
 					{links.map(({ href, title, colorKey }) => (
 						<Link key={href} href={href}>
 							<div
@@ -42,7 +56,7 @@ export default function Home() {
 							</div>
 						</Link>
 					))}
-				</div>
+				</motion.div>
 			</section>
 		</main>
 	);
