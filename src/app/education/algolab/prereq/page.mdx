@@ -1,0 +1,273 @@
+# Algorithm Lab – Prerequisites
+
+Here I am preparing for the course XZY algolab.
+
+---
+
+## Algorithmic Design Methods
+
+### Greedy 
+
+The **Greedy** paradigm builds up a solution piece by piece, always choosing the option that offers the most immediate benefit. Greedy algorithms do not always yield optimal results for all problems but can be highly efficient when the problem exhibits the **greedy-choice property** and **optimal substructure**. These properties ensure that locally optimal decisions lead to a globally optimal solution.
+
+### Minimum Spanning Tree
+
+<details>
+<summary>Problem Statement</summary>
+
+Given a <strong>connected</strong>, <strong>undirected</strong>, and <strong>weighted</strong> graph <InlineMath math="G = (V, E)" />, the goal is to find a subset of edges <InlineMath math="T \subseteq E" /> such that:
+
+- <InlineMath math="T" /> forms a tree (i.e., it is connected and acyclic),
+- <InlineMath math="T" /> spans all vertices in the graph (i.e., includes all nodes in <InlineMath math="V" />),
+- The total weight <InlineMath math="\sum_{e \in T} w(e)" /> is minimized.
+
+Such a set <InlineMath math="T" /> is called a <strong>Minimum Spanning Tree (MST)</strong>.
+
+</details>
+
+<details>
+<summary>Intuition: Kruskal's Algorithm</summary>
+
+Kruskal’s algorithm is a **greedy approach** for finding a Minimum Spanning Tree (MST). It works by always adding the next **lightest edge** that doesn't form a cycle. It treats the graph as a collection of disjoint trees and gradually merges them into a single spanning tree.
+
+The key idea is: if we process edges in order of increasing weight, and avoid cycles, we end up with a spanning tree of minimal total weight.
+
+This is done efficiently using a **Union-Find (Disjoint Set Union - DSU)** data structure to detect and prevent cycles.
+</details>
+
+<details>
+<summary>C++ Implementation</summary>
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+struct Edge {
+    int u, v, weight;
+    bool operator<(const Edge& other) const {
+        return weight < other.weight;
+    }
+};
+
+struct DSU {
+    vector<int> parent, rank;
+    DSU(int n) : parent(n), rank(n, 0) {
+        for (int i = 0; i < n; ++i) parent[i] = i;
+    }
+    int find(int x) {
+        if (x != parent[x])
+            parent[x] = find(parent[x]);
+        return parent[x];
+    }
+    bool unite(int x, int y) {
+        int xr = find(x), yr = find(y);
+        if (xr == yr) return false;
+        if (rank[xr] < rank[yr]) swap(xr, yr);
+        parent[yr] = xr;
+        if (rank[xr] == rank[yr]) ++rank[xr];
+        return true;
+    }
+};
+
+int kruskal(int n, vector<Edge>& edges) {
+    sort(edges.begin(), edges.end());
+    DSU dsu(n);
+    int total_weight = 0;
+    for (const auto& e : edges) {
+        if (dsu.unite(e.u, e.v)) {
+            total_weight += e.weight;
+        }
+    }
+    return total_weight;
+}
+```
+</details>
+
+<details>
+<summary>Correctness Proof</summary>
+
+Kruskal’s algorithm is guaranteed to produce a **Minimum Spanning Tree (MST)** due to the following key properties:
+
+---
+
+### Greedy Choice Property
+
+At each step, Kruskal’s algorithm chooses the **lightest edge** that connects two different components (i.e., doesn’t form a cycle). This local decision is always **safe**:
+
+> If we have a forest and add the smallest weight edge that connects two trees in the forest, then there exists an MST that includes this edge.
+
+This follows from the **Cut Property** of MSTs.
+
+---
+
+### Cut Property
+
+For any **cut** (partition of the graph into two disjoint subsets), the **minimum-weight edge** crossing the cut is **guaranteed to be in some MST**.
+
+Kruskal’s algorithm always picks such an edge (minimum weight across a valid cut), so it never chooses a “bad” edge.
+
+---
+
+### Cycle Prevention
+
+The algorithm uses a **Union-Find** (Disjoint Set Union) structure to ensure that no cycles are created when adding an edge. This maintains the **acyclic** property of trees.
+
+---
+
+### Result
+
+After adding <InlineMath math="n - 1" /> edges:
+
+- The resulting structure is a **spanning tree** (connected and acyclic),
+- It is guaranteed to have **minimum weight** due to the cut property and greedy choice,
+- Hence, the algorithm returns a **valid MST**.
+
+</details>
+
+<details>
+<summary> Complexity Analysis</summary>
+
+Let:
+
+- <InlineMath math="n = |V|" /> (number of nodes)
+- <InlineMath math="m = |E|" /> (number of edges)
+
+### Time Complexity
+
+1. **Sorting the edges**:  
+   - Kruskal’s algorithm starts by sorting all edges by weight.  
+   - Sorting takes <InlineMath math="O(m \log m)" /> time.
+
+2. **Union-Find operations**:  
+   - We use Union-Find (Disjoint Set Union – DSU) to detect and avoid cycles.
+   - With path compression and union by rank, each operation takes nearly constant time:  
+     <InlineMath math="O(\alpha(n))" />, where <InlineMath math="\alpha" /> is the inverse Ackermann function.
+   - Across all <InlineMath math="m" /> edges, the total cost is <InlineMath math="O(m \cdot \alpha(n))" />.
+
+ Therefore, total time complexity is:
+<InlineMath math="O(m \log m)" />  
+(Note: <InlineMath math="m \log m" /> dominates <InlineMath math="m \cdot \alpha(n)" />.)
+
+---
+
+### Space Complexity
+
+- **Edge list**: <InlineMath math="O(m)" />
+- **DSU structure (parent + rank arrays)**: <InlineMath math="O(n)" />
+
+Total space complexity:
+<InlineMath math="O(n + m)" />
+</details>
+
+**Examples:**
+- Minimum Spanning Tree (Kruskal)
+- Minimum Spanning Tree (Jarník/Prim)
+
+---
+
+### Divide and Conquer
+
+**Divide and Conquer** is a recursive strategy that breaks a problem into smaller subproblems, solves each independently, and then combines their solutions to solve the original problem. It is especially effective when subproblems are simpler versions of the original and can be solved independently of one another.
+
+**Examples:**
+- Mergesort
+- Quicksort
+- Convex Hull
+
+---
+
+### Dynamic Programming
+
+**Dynamic Programming (DP)** is used for problems that exhibit **overlapping subproblems** and **optimal substructure**. Instead of solving the same subproblems multiple times, DP stores and reuses results, often implemented through memoization (top-down) or tabulation (bottom-up). It guarantees optimal solutions but can require significant space and time resources.
+
+**Examples:**
+- Longest Increasing Subsequence
+- Knapsack
+- Matrix Chain Multiplication
+
+---
+
+### Backtracking and Recursion
+
+**Backtracking** systematically searches through all possible configurations of a solution space and abandons ("backtracks") a path as soon as it determines the path cannot lead to a valid solution. It is typically used in **constraint satisfaction problems**. Recursion is the underlying mechanism in backtracking, where the function calls itself to explore choices step by step.
+
+**Examples:**
+- Maximum Independent Set
+- 8-Queens Problem
+
+---
+
+## Data Structures
+
+### Basic Structures
+- Array
+- List
+- Stack
+- Queue
+- Hash Table
+- Binary Search Tree
+- Bitmask
+
+### Priority Queues
+- Binary Heap
+
+### Union-Find
+- Constant Find (array)
+- Constant Union (tree)
+- Path Compression
+
+---
+
+## Topics
+
+### Sorting and Searching
+- Mergesort
+- Quicksort
+- Heapsort
+- Insertion Sort
+- Bubble Sort
+- Radix Sort
+- Bucket Sort
+- Binary Search
+
+### Graph Algorithms
+- Graph Traversal (DFS, BFS, Connected Components)
+- Minimum Spanning Tree
+- Single-Source Shortest Path (Dijkstra)
+- Bipartite Matching
+- Maximum Flow (Ford–Fulkerson, Edmonds–Karp)
+
+### Graph Notions
+- Hamiltonian Cycle
+- Eulerian Walk
+- Traveling Salesman Tour
+- Coloring
+- Network Flow
+- Clique
+- Independent Set
+- Topological Sorting
+
+### Geometry Algorithms
+- Segment and Line Properties
+- Convex Hull
+
+### Number Theoretic Algorithms
+- Greatest Common Divisor (Euclid)
+- Powers of an Element
+- Modular Arithmetic
+
+---
+
+## Analysis of Algorithms
+
+### Big-O Notation
+
+### Time/Space Complexity Analysis
+- Nested For-Loops
+- Recursion Tree Method
+
+### NP-Hardness
+- 3-SAT
+- Traveling Salesman Problem
