@@ -26,7 +26,7 @@ export default function Home() {
 	return (
 		<main
 			ref={containerRef}
-			className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory"
+			className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
 		>
 			{/* Hero Text Background */}
 			<section className="fixed top-0 left-0 w-full h-screen flex flex-col items-center justify-center pointer-events-none z-0">
@@ -42,21 +42,23 @@ export default function Home() {
 			<section className="snap-start h-screen w-full" />
 
 			{/* Overlay Cards Section */}
-			<section className="snap-start h-screen w-full relative z-10 flex items-center justify-center px-12">
-				<motion.div
-					whileInView={{ opacity: 1, y: 0 }}
-					className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 w-full max-w-6xl"
-				>
-					{links.map(({ href, title, colorKey }) => (
-						<Link key={href} href={href}>
-							<div
-								className={`bg-white p-6 transition-colors cursor-pointer text-2xl font-bold uppercase text-center h-full flex items-center justify-center text-black hover:text-white hover:bg-[${pageColors[colorKey]}]`}
-							>
-								{title}
-							</div>
-						</Link>
-					))}
-				</motion.div>
+			<section className="snap-start h-screen w-full relative z-10 flex items-center justify-center px-4 sm:px-8 lg:px-12">
+				<div className="w-full max-w-7xl overflow-y-auto sm:overflow-visible">
+					<motion.div
+						whileInView={{ opacity: 1, y: 0 }}
+						className="grid grid-cols-2 sm:grid-cols-3 gap-12"
+					>
+						{links.map(({ href, title, colorKey }) => (
+							<Link key={href} href={href}>
+								<div
+									className={`bg-white px-8 py-12 transition-colors cursor-pointer text-2xl sm:text-2xl lg:text-3xl font-bold uppercase text-center min-h-[120px] flex items-center justify-center text-black hover:text-white hover:bg-[${pageColors[colorKey]}]`}
+								>
+									{title}
+								</div>
+							</Link>
+						))}
+					</motion.div>
+				</div>
 			</section>
 		</main>
 	);
